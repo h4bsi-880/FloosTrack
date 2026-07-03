@@ -1,0 +1,28 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #6d5df6;
+}
+
+.icon-button {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 12px;
+  background: #151c2c;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}

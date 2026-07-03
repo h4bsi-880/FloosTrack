@@ -1,0 +1,34 @@
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-search {
+  flex: 2;
+  min-width: 180px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #24304a;
+  background: #151c2c;
+  color: white;
+  font-size: 14px;
+}
+
+.filter-bar select {
+  flex: 1;
+  min-width: 130px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #24304a;
+  background: #151c2c;
+  color: white;
+  font-size: 14px;
+}
+
+.filter-search:focus,
+.filter-bar select:focus {
+  outline: none;
+  border-color: #6d5df6;
+}

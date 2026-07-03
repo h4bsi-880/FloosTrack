@@ -1,0 +1,18 @@
+.balance-card {
+  background: linear-gradient(135deg, #6d5df6, #4338ca);
+  border-radius: 20px;
+  padding: 30px;
+  margin: 20px 0;
+  color: white;
+}
+
+.balance-label {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 14px;
+}
+
+.balance-amount {
+  margin: 10px 0 0;
+  font-size: 36px;
+}
