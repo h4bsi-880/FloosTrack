@@ -5,6 +5,7 @@ import SummaryCard from "../components/SummaryCard";
 import TransactionForm from "../components/TransactionForm";
 import CategoryChart from "../components/CategoryChart";
 import FilterBar from "../components/FilterBar";
+import { exportToPDF } from "../utils/exportPDF";
 import "../styles/summary.css";
 
 function monthKey(timestamp) {
@@ -106,7 +107,22 @@ export default function Home() {
       <FilterBar filters={filters} setFilters={setFilters} categories={categories} months={months} />
 
       <div className="transactions">
-        <h2>Recent Transactions</h2>
+        <div className="transactions-header">
+          <h2>Recent Transactions</h2>
+          <button
+            className="export-btn"
+            onClick={() =>
+              exportToPDF(filtered, {
+                balance: balance.toFixed(3),
+                income: income.toFixed(3),
+                expenses: expenses.toFixed(3),
+              })
+            }
+          >
+            ⬇ Export PDF
+          </button>
+        </div>
+
         {filtered.length === 0 && <p className="empty">No transactions match...</p>}
 
         {Object.entries(grouped).map(([month, txs]) => (

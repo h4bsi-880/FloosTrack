@@ -202,3 +202,27 @@
     flex-wrap: wrap;
   }
 }
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.transactions-header h2 {
+  margin: 0;
+}
+
+.export-btn {
+  background: #24304a;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.export-btn:hover {
+  background: #2f3d5c;
+}
