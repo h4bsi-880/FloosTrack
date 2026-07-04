@@ -1,4 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  setDoc,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "../firebase";
 import Header from "../components/Header";
 import BalanceCard from "../components/BalanceCard";
 import SummaryCard from "../components/SummaryCard";
@@ -14,28 +25,37 @@ function monthKey(timestamp) {
   return d.toLocaleString("default", { month: "long", year: "numeric" });
 }
 
-export default function Home() {
-  const [transactions, setTransactions] = useState(() => {
-    const saved = localStorage.getItem("floostrack-transactions");
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [budgets, setBudgets] = useState(() => {
-    const saved = localStorage.getItem("floostrack-budgets");
-    return saved ? JSON.parse(saved) : {};
-  });
+export default function Home({ user, onLogout }) {
+  const [transactions, setTransactions] = useState([]);
+  const [budgets, setBudgets] = useState({});
+  const [loadingData, setLoadingData] = useState(true);
 
   const [modalType, setModalType] = useState(null);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [filters, setFilters] = useState({ search: "", type: "all", category: "all", month: "all" });
 
+  // Live-sync transactions from Firestore
   useEffect(() => {
-    localStorage.setItem("floostrack-transactions", JSON.stringify(transactions));
-  }, [transactions]);
+    const txRef = collection(db, "users", user.uid, "transactions");
+    const unsubscribe = onSnapshot(txRef, (snapshot) => {
+      const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      txs.sort((a, b) => b.id.localeCompare(a.id)); // fallback sort, replaced below
+      setTransactions(
+        txs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      );
+      setLoadingData(false);
+    });
+    return unsubscribe;
+  }, [user.uid]);
 
+  // Load budgets once (single document)
   useEffect(() => {
-    localStorage.setItem("floostrack-budgets", JSON.stringify(budgets));
-  }, [budgets]);
+    const budgetRef = doc(db, "users", user.uid, "meta", "budgets");
+    const unsubscribe = onSnapshot(budgetRef, (snap) => {
+      setBudgets(snap.exists() ? snap.data() : {});
+    });
+    return unsubscribe;
+  }, [user.uid]);
 
   const income = transactions.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0);
   const expenses = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0);
@@ -52,7 +72,7 @@ export default function Home() {
   );
 
   const months = useMemo(
-    () => [...new Set(transactions.map((t) => monthKey(t.id)))],
+    () => [...new Set(transactions.map((t) => monthKey(t.createdAt)))],
     [transactions]
   );
 
@@ -65,7 +85,7 @@ export default function Home() {
     transactions
       .filter((t) => t.type === "expense")
       .filter((t) => {
-        const d = new Date(t.id);
+        const d = new Date(t.createdAt);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
       })
       .forEach((t) => {
@@ -77,7 +97,7 @@ export default function Home() {
   const filtered = transactions.filter((t) => {
     if (filters.type !== "all" && t.type !== filters.type) return false;
     if (filters.category !== "all" && t.category !== filters.category) return false;
-    if (filters.month !== "all" && monthKey(t.id) !== filters.month) return false;
+    if (filters.month !== "all" && monthKey(t.createdAt) !== filters.month) return false;
     if (filters.search && !`${t.description} ${t.category}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
     return true;
   });
@@ -85,7 +105,7 @@ export default function Home() {
   const grouped = useMemo(() => {
     const groups = {};
     filtered.forEach((t) => {
-      const key = monthKey(t.id);
+      const key = monthKey(t.createdAt);
       if (!groups[key]) groups[key] = [];
       groups[key].push(t);
     });
@@ -107,22 +127,38 @@ export default function Home() {
     setEditingTransaction(null);
   }
 
-  function handleSave(data) {
+  async function handleSave(data) {
     if (editingTransaction) {
-      setTransactions(transactions.map((t) => (t.id === editingTransaction.id ? { ...t, ...data } : t)));
+      const txDoc = doc(db, "users", user.uid, "transactions", editingTransaction.id);
+      await updateDoc(txDoc, data);
     } else {
-      setTransactions([{ id: Date.now(), type: modalType, ...data }, ...transactions]);
+      const txRef = collection(db, "users", user.uid, "transactions");
+      await addDoc(txRef, { type: modalType, ...data, createdAt: Date.now() });
     }
     closeModal();
   }
 
-  function deleteTransaction(id) {
-    setTransactions(transactions.filter((t) => t.id !== id));
+  async function deleteTransaction(id) {
+    const txDoc = doc(db, "users", user.uid, "transactions", id);
+    await deleteDoc(txDoc);
+  }
+
+  async function updateBudgets(newBudgets) {
+    setBudgets(newBudgets);
+    const budgetRef = doc(db, "users", user.uid, "meta", "budgets");
+    await setDoc(budgetRef, newBudgets);
+  }
+  if (loadingData) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>
+        Loading your data...
+      </div>
+    );
   }
 
   return (
     <div className="home">
-      <Header />
+      <Header user={user} onLogout={onLogout} />
       <BalanceCard amount={balance.toFixed(3)} />
 
       <div className="summary-row">
@@ -139,7 +175,7 @@ export default function Home() {
 
       <BudgetManager
         budgets={budgets}
-        setBudgets={setBudgets}
+        setBudgets={updateBudgets}
         categories={expenseCategories.length > 0 ? expenseCategories : ["Food", "Transport", "Bills", "Shopping", "Entertainment", "Other"]}
         spentByCategory={spentByCategory}
       />
