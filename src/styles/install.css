@@ -1,0 +1,19 @@
+.install-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #6d5df6;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+}
+
+.install-btn:hover {
+  background: #5b4de0;
+}

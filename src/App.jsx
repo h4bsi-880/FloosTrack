@@ -4,6 +4,7 @@ import { auth } from "./firebase";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import "./index.css";
+import InstallPrompt from "./components/InstallPrompt";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -26,8 +27,18 @@ export default function App() {
   }
 
   if (!user) {
-    return <Login />;
+    return (
+      <>
+        <Login />
+        <InstallPrompt />
+      </>
+    );
   }
 
-  return <Home user={user} onLogout={() => signOut(auth)} />;
+  return (
+    <>
+      <Home user={user} onLogout={() => signOut(auth)} />
+      <InstallPrompt />
+    </>
+  );
 }
