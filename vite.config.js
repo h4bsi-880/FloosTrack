@@ -8,6 +8,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        navigateFallback: '/index.html',
+      },
       manifest: {
         name: 'FloosTrack',
         short_name: 'FloosTrack',

@@ -176,7 +176,7 @@ export default function Home({ user, onLogout }) {
       <BudgetManager
         budgets={budgets}
         setBudgets={updateBudgets}
-        categories={expenseCategories.length > 0 ? expenseCategories : ["Food", "Transport", "Bills", "Shopping", "Entertainment", "Other"]}
+        categories={expenseCategories.length > 0 ? expenseCategories : ["Food", "Groceries", "Clothing", "Coffee", "Health", "Cosmetics", "Car Maintenance", "Petrol", "Home Maintenance", "Gaming", "Electronics", "Furniture", "Gym", "School", "University", "Bills", "Entertainment", "Other"]}
         spentByCategory={spentByCategory}
       />
 

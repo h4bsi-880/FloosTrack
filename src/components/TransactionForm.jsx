@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../styles/modal.css";
 
-const EXPENSE_CATEGORIES = ["Food", "Transport", "Bills", "Shopping", "Entertainment", "Other"];
+const EXPENSE_CATEGORIES = ["Food", "Groceries", "Clothing", "Coffee", "Health", "Cosmetics", "Car Maintenance", "Petrol", "Home Maintenance", "Gaming", "Electronics", "Furniture", "Gym", "School", "University", "Bills", "Entertainment", "Other"];
 const INCOME_CATEGORIES = ["Salary", "Gift", "Freelance", "Other"];
 
 export default function TransactionForm({ type, initialData, onSave, onClose }) {
