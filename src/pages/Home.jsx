@@ -210,15 +210,17 @@ export default function Home({ user, onLogout }) {
                     <span className="tx-desc">{t.description}</span>
                     <span className="tx-category">{t.category}</span>
                   </div>
-                  {t.date && (
-  <span className="tx-date">
-    {t.date.split("-").reverse().join("-")}
-  </span>
-)}
                   <div className="tx-right">
-                    <span className="tx-amount">
-                      {t.type === "income" ? "+" : "-"}{t.amount.toFixed(3)} OMR
-                    </span>
+                    <div className="tx-amount-date">
+                      <span className="tx-amount">
+                        {t.type === "income" ? "+" : "-"}{t.amount.toFixed(3)} OMR
+                      </span>
+                      {t.date && (
+                        <span className="tx-date">
+                          {t.date.split("-").reverse().join("-")}
+                        </span>
+                      )}
+                    </div>
                     <button className="edit-btn" onClick={() => openEditModal(t)}>✎</button>
                     <button className="delete-btn" onClick={() => deleteTransaction(t.id)}>✕</button>
                   </div>
