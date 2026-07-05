@@ -39,9 +39,8 @@ export default function Home({ user, onLogout }) {
     const txRef = collection(db, "users", user.uid, "transactions");
     const unsubscribe = onSnapshot(txRef, (snapshot) => {
       const txs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-      txs.sort((a, b) => b.id.localeCompare(a.id)); // fallback sort, replaced below
       setTransactions(
-        txs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+        txs.sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt))
       );
       setLoadingData(false);
     });
@@ -72,7 +71,7 @@ export default function Home({ user, onLogout }) {
   );
 
   const months = useMemo(
-    () => [...new Set(transactions.map((t) => monthKey(t.createdAt)))],
+    () => [...new Set(transactions.map((t) => monthKey(t.date || t.createdAt)))],
     [transactions]
   );
 
@@ -85,7 +84,7 @@ export default function Home({ user, onLogout }) {
     transactions
       .filter((t) => t.type === "expense")
       .filter((t) => {
-        const d = new Date(t.createdAt);
+        const d = new Date(t.date || t.createdAt);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
       })
       .forEach((t) => {
@@ -97,7 +96,7 @@ export default function Home({ user, onLogout }) {
   const filtered = transactions.filter((t) => {
     if (filters.type !== "all" && t.type !== filters.type) return false;
     if (filters.category !== "all" && t.category !== filters.category) return false;
-    if (filters.month !== "all" && monthKey(t.createdAt) !== filters.month) return false;
+    if (filters.month !== "all" && monthKey(t.date || t.createdAt) !== filters.month) return false;
     if (filters.search && !`${t.description} ${t.category}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
     return true;
   });
@@ -105,7 +104,7 @@ export default function Home({ user, onLogout }) {
   const grouped = useMemo(() => {
     const groups = {};
     filtered.forEach((t) => {
-      const key = monthKey(t.createdAt);
+      const key = monthKey(t.date || t.createdAt);
       if (!groups[key]) groups[key] = [];
       groups[key].push(t);
     });
@@ -210,6 +209,7 @@ export default function Home({ user, onLogout }) {
                   <div className="tx-info">
                     <span className="tx-desc">{t.description}</span>
                     <span className="tx-category">{t.category}</span>
+                    {t.date && <span className="tx-date">{t.date}</span>}
                   </div>
                   <div className="tx-right">
                     <span className="tx-amount">
