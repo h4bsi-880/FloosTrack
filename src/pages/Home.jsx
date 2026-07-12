@@ -34,7 +34,25 @@ export default function Home({ user, onLogout }) {
 
   const [modalType, setModalType] = useState(null);
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [prefillData, setPrefillData] = useState(null);
   const [filters, setFilters] = useState({ search: "", type: "all", category: "all", month: "all" });
+
+  // Pre-fill Add Transaction form from a shared link (e.g. iOS Shortcut from a bank SMS)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const amount = params.get("amount");
+    if (amount) {
+      const type = params.get("type") === "income" ? "income" : "expense";
+      setPrefillData({
+        amount: Number(amount),
+        description: params.get("desc") || "",
+        date: params.get("date") || "",
+      });
+      setModalType(type);
+      // Clean the URL so refreshing doesn't reopen the form
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   // Live-sync transactions from Firestore
   useEffect(() => {
@@ -147,6 +165,7 @@ export default function Home({ user, onLogout }) {
   function closeModal() {
     setModalType(null);
     setEditingTransaction(null);
+    setPrefillData(null);
   }
 
   function handleSave(data) {
@@ -266,7 +285,7 @@ export default function Home({ user, onLogout }) {
       </div>
 
       {modalType && (
-        <TransactionForm type={modalType} initialData={editingTransaction} onSave={handleSave} onClose={closeModal} />
+        <TransactionForm type={modalType} initialData={editingTransaction || prefillData} onSave={handleSave} onClose={closeModal} />
       )}
     </div>
   );
