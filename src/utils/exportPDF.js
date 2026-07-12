@@ -11,7 +11,7 @@ export function exportToPDF(transactions, summary) {
 
   doc.setFontSize(20);
   doc.setTextColor(109, 93, 246);
-  doc.text("FloosTrack", 14, 20);
+  doc.text("MyFloos", 14, 20);
 
   doc.setFontSize(11);
   doc.setTextColor(100);
@@ -26,7 +26,7 @@ export function exportToPDF(transactions, summary) {
   doc.text(`Expenses: ${summary.expenses} OMR`, 14, 52);
 
   const rows = transactions.map((t) => [
-    new Date(t.id).toLocaleDateString(),
+    t.date ? t.date.split("-").reverse().join("/") : new Date(t.createdAt).toLocaleDateString(),
     t.type === "income" ? "Income" : "Expense",
     t.category,
     t.description,
@@ -41,5 +41,5 @@ export function exportToPDF(transactions, summary) {
     styles: { fontSize: 10 },
   });
 
-  doc.save(`floostrack-transactions-${new Date().toISOString().slice(0, 10)}.pdf`);
+  doc.save(`myfloos-transactions-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

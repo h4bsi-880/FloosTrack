@@ -71,7 +71,7 @@ export default function Login() {
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
           <Logo size={64} />
         </div>
-        <h1 className="login-logo">Floos<span>Track</span></h1>
+        <h1 className="login-logo">My<span>Floos</span></h1>
         <p className="login-subtitle">{isSignup ? t("login.createAccount") : t("login.welcomeBack")}</p>
 
         {error && <p className="login-error">{error}</p>}

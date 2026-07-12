@@ -54,7 +54,7 @@ export default function InstallPrompt() {
       {showIOSInstructions && (
         <div className="modal-overlay" onClick={() => setShowIOSInstructions(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Install FloosTrack</h2>
+            <h2>Install MyFloos</h2>
             <p style={{ opacity: 0.8, fontSize: 14, lineHeight: 1.6 }}>
               1. Tap the <strong>Share</strong> button (square with an arrow) at the bottom of Safari.<br /><br />
               2. Scroll down and tap <strong>"Add to Home Screen"</strong>.<br /><br />

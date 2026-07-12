@@ -1,9 +1,9 @@
 {
-  "appName": "FloosTrack",
+  "appName": "MyFloos",
   "loading": {
     "messages": [
       "Counting your Rials...",
-      "Fetching your Floos...",
+      "Fetching your MyFloos...",
       "Balancing the books...",
       "Adding up the numbers...",
       "Almost there..."

@@ -45,7 +45,7 @@ export default function Header({ user, onLogout }) {
       </div>
 
       <h2 className="logo">
-        Floos<span>Track</span>
+        My<span>Floos</span>
       </h2>
 
       <div className="header-right">
